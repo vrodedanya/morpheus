@@ -19,7 +19,7 @@ namespace morph
 			std::string line;
 			while (std::getline(f, line))
 			{
-				parse(root, line);
+				if (line.size()) parse(root, line);
 			}
 			return root;
 		}
@@ -52,25 +52,12 @@ namespace morph
 			if (line.find(':') != std::string::npos)
 			{
 				line = line.substr(line.find(':') + 1);
-				bool isNode = false;
-				std::string subNode_name;
-				for (const auto& sym : line)
+				std::string subNode;
+				while (line.find('[') != std::string::npos)
 				{
-					if (isNode)
-					{
-						if (sym == ']')
-						{
-							newNode->add(subNode_name, nullptr);
-							subNode_name.clear();
-							isNode = false;
-							continue;
-						}
-						subNode_name += sym;
-					}
-					else
-					{
-						if (sym == '[') isNode = true;
-					}
+					subNode = line.substr(line.find('[') + 1, line.find(']') - line.find('[') - 1);
+					line = line.substr(line.find(']') + 1);
+					newNode->add(subNode, nullptr);
 				}
 			}
 		}
