@@ -42,6 +42,28 @@ namespace morph
         	}
         	else return this;
         }
+        std::vector<node*> findAllParentsNode(std::string name)
+        {
+        	std::vector<node*> parents;
+        	auto it = std::find_if(childs.cbegin(), childs.cend(), [node_name = name](const auto& pair)
+        	{
+        		return pair.first == node_name;
+        	});
+        	if (it == childs.cend())
+        	{
+        		for (const auto& elem : childs)
+        		{
+        			if (elem.second != nullptr)
+        			{
+        				auto buf = elem.second->findParentNode(name);
+        				if (buf != nullptr) parents.push_back(buf);
+        			}
+        		}
+        		return parents;
+        	}
+        	parents.push_back(this);
+        	return parents;
+        }
 
         node_ptr get(std::string name)
         {

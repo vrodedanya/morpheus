@@ -22,7 +22,7 @@ int main()
 		std::cout << t->value << std::endl;
 		if (!t->size()) break;
 		std::cout << "Available answers: "<< t->getAvailableNodes() << std::endl;
-		std::cin >> answer;
+		std::getline(std::cin, answer);
 		try
 		{
 			t = t->get(answer);

@@ -42,9 +42,12 @@ namespace morph
 			}
 			else
 			{
-				auto buf = root->findParentNode(node_name);
-				if (buf == nullptr) throw std::runtime_error("Dangling node");
-				buf->getChilds()[node_name] = newNode;
+				auto bufVector = root->findAllParentsNode(node_name);
+				for (auto& buf : bufVector)
+				{
+					if (buf == nullptr) throw std::runtime_error("Dangling node '" + node_name + "'");
+					buf->getChilds()[node_name] = newNode;
+				}
 			}
 		}
 		static void add_childs(node_ptr<T>& newNode, std::string& line)
