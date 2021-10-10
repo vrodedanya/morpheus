@@ -43,7 +43,7 @@ namespace morph
 			}
 			else
 			{
-				auto bufVector = root->findAllParentsNode(node_name);
+				auto bufVector = root->findAllParentsOf(node_name);
 				for (auto& buf : bufVector)
 				{
 					if (buf == nullptr) throw std::runtime_error("Dangling node '" + node_name + "'");

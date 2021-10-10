@@ -22,46 +22,42 @@ namespace morph
         	childs[name] = newNode;
         }
 
-        node* findParentNode(std::string name)
+        node* findParentOf(std::string name)
         {
         	auto it = std::find_if(childs.cbegin(), childs.cend(), [node_name = name](const auto& pair)
+	            {
+	                return pair.first == node_name;
+	            });
+        	if (it != childs.cend()) return this;
+        	for (const auto& elem : childs)
         	{
-        		return pair.first == node_name;
-        	});
-        	if (it == childs.cend())
-        	{
-        		for (const auto& elem : childs)
+        		if (elem.second != nullptr)
         		{
-        			if (elem.second != nullptr)
-        			{
-        				auto buf = elem.second->findParentNode(name);
-        				if (buf != nullptr) return buf;
-        			}
+        			auto buf = elem.second->findParentOf(name);
+        			if (buf != nullptr) return buf;
         		}
-        		return nullptr;
         	}
-        	else return this;
+        	return nullptr;
         }
-        std::vector<node*> findAllParentsNode(std::string name)
+        std::vector<node*> findAllParentsOf(std::string name)
         {
         	std::vector<node*> parents;
-        	auto it = std::find_if(childs.cbegin(), childs.cend(), [node_name = name](const auto& pair)
+	            auto it = std::find_if(childs.cbegin(), childs.cend(), [node_name = name](const auto& pair)
+	            {
+	                return pair.first == node_name;
+	            });
+        	if (it != childs.cend())
         	{
-        		return pair.first == node_name;
-        	});
-        	if (it == childs.cend())
-        	{
-        		for (const auto& elem : childs)
-        		{
-        			if (elem.second != nullptr)
-        			{
-        				auto buf = elem.second->findParentNode(name);
-        				if (buf != nullptr) parents.push_back(buf);
-        			}
-        		}
-        		return parents;
+        		parents.push_back(this);
         	}
-        	parents.push_back(this);
+        	for (const auto& elem : childs)
+        	{
+        		if (elem.second != nullptr)
+        		{
+        			auto buf = elem.second->findParentOf(name);
+        			if (buf != nullptr) parents.push_back(buf);
+        		}
+        	}
         	return parents;
         }
 
@@ -75,12 +71,12 @@ namespace morph
         	return (*it).second;
         }
 
-        std::map<std::string, node_ptr> &getChilds()
+        std::map<std::string, node_ptr>& getChilds()
         {
         	return childs;
         }
 
-	    const std::weak_ptr<node> &getParent() const
+	    const std::weak_ptr<node>& getParent() const
 	    {
 		    return parent;
 	    }
@@ -92,7 +88,7 @@ namespace morph
 
 	    std::size_t size() const noexcept {return childs.size();}
 
-	    const std::vector<std::string> &getAvailableNodes() const
+	    const std::vector<std::string>& getAvailableNodes() const
 	    {
 		    return availableNodes;
 	    }
