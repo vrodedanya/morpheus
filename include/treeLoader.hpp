@@ -17,9 +17,10 @@ namespace morph
 			node_ptr<T> root = nullptr;
 
 			std::string line;
-			while (std::getline(f, line))
+			while (std::getline(f, line, ';'))
 			{
-				if (line.size()) parse(root, line);
+				auto it = std::remove(line.begin(), line.end(), '\n');
+				if (!line.empty()) parse(root, line);
 			}
 			return root;
 		}
