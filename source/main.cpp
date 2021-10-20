@@ -1,5 +1,4 @@
 #include <iostream>
-#include <fstream>
 #include <treeLoader.hpp>
 
 template<typename T>
@@ -23,14 +22,9 @@ int main()
 		if (!t->size()) break;
 		std::cout << "Available answers: "<< t->getAvailableNodes() << std::endl;
 		std::getline(std::cin, answer);
-		try
-		{
-			t = t->get(answer);
-		}
-		catch (const std::exception& except)
-		{
-			std::cerr << "Wrong answer! I can't continue dialogue" << std::endl;
-		}
+		auto buf = t->get(answer);
+		if (buf == nullptr) std::cout << "Wrong answer! I can't continue dialogue" << std::endl;
+		else t = buf;
 	}
     return 0;
 }

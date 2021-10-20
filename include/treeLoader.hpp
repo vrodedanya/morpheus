@@ -14,13 +14,17 @@ namespace morph
 		{
 			std::ifstream f(file);
 
-			node_ptr<T> root = nullptr;
+			node_ptr<T> root = std::make_shared<node<T>>();
 
 			std::string line;
 			while (std::getline(f, line, ';'))
 			{
 				auto it = std::remove(line.begin(), line.end(), '\n');
-				if (!line.empty()) parse(root, line);
+				if (!line.empty())
+				{
+					parse(root, line);
+					line.clear();
+				}
 			}
 			return root;
 		}
@@ -35,33 +39,37 @@ namespace morph
 			std::string value = line.substr(line.find('{') + 1, line.find('}') - line.find('{') - 1 );
 			newNode->value = value;
 
-			add_childs(newNode, line);
-
-			if (root == nullptr)
+			if (!root->size())
 			{
-				root = newNode;
+				newNode->setLevel(1);
+				root->add(node_name, newNode);
 			}
 			else
 			{
 				auto bufVector = root->findAllParentsOf(node_name);
+				if (bufVector.empty()) throw std::runtime_error("Dangling node '" + node_name + "'");
+				int level = 0;
 				for (auto& buf : bufVector)
 				{
-					if (buf == nullptr) throw std::runtime_error("Dangling node '" + node_name + "'");
+					if (buf->getLevel() > level) level = buf->getLevel();
 					buf->getChilds()[node_name] = newNode;
 				}
+				newNode->setLevel(level + 1);
 			}
+			add_childs(root,newNode, line);
 		}
-		static void add_childs(node_ptr<T>& newNode, std::string& line)
+		static void add_childs(node_ptr<T>& root, node_ptr<T>& newNode, std::string& line)
 		{
 			if (line.find(':') != std::string::npos)
 			{
 				line = line.substr(line.find(':') + 1);
-				std::string subNode;
+				std::string subNode_name;
 				while (line.find('[') != std::string::npos)
 				{
-					subNode = line.substr(line.find('[') + 1, line.find(']') - line.find('[') - 1);
+					subNode_name = line.substr(line.find('[') + 1, line.find(']') - line.find('[') - 1);
 					line = line.substr(line.find(']') + 1);
-					newNode->add(subNode, nullptr);
+					auto subNode_node = root->find(subNode_name);
+					newNode->add(subNode_name, subNode_node);
 				}
 			}
 		}
