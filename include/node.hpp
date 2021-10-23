@@ -63,7 +63,6 @@ namespace morph
         }
         std::vector<node*> findAllParentsOf(std::string name)
         {
-        	std::cout << name << std::endl;
         	std::vector<node*> parents;
 	            auto it = std::find_if(childs.cbegin(), childs.cend(), [node_name = name](const auto& pair)
 	            {
@@ -77,7 +76,6 @@ namespace morph
         	{
         		if (elem.second != nullptr)
         		{
-        			std::cerr << elem.second->getLevel() << " " << level << std::endl;
         			if (elem.second->getLevel() < level) break;
         			auto bufVector = elem.second->findAllParentsOf(name);
         			for (const auto subElem : bufVector)

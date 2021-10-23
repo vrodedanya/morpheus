@@ -3,6 +3,8 @@
 
 #include <node.hpp>
 #include <fstream>
+#include <type_traits>
+#include <ValueType.hpp>
 
 namespace morph
 {
@@ -19,7 +21,6 @@ namespace morph
 			std::string line;
 			while (std::getline(f, line, ';'))
 			{
-				auto it = std::remove(line.begin(), line.end(), '\n');
 				if (!line.empty())
 				{
 					parse(root, line);
@@ -33,11 +34,19 @@ namespace morph
 		{
 			node_ptr<T> newNode = std::make_shared<node<T>>();
 
-			std::string node_name = line.substr(1, line.find(']') - 1);
+			std::string node_name = line.substr(line.find('[') + 1, line.find(']') - line.find('[') -1);
 			line = line.substr(node_name.size());
 
 			std::string value = line.substr(line.find('{') + 1, line.find('}') - line.find('{') - 1 );
-			newNode->value = value;
+			if constexpr(std::is_base_of<ValueType, T>::value)
+			{
+				newNode->value.registerData();
+				newNode->value.getData(value);
+			}
+			else
+			{
+				newNode->value = value;
+			}
 
 			if (!root->size())
 			{

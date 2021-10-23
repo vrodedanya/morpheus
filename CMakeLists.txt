@@ -4,6 +4,6 @@ project(morpheus)
 
 include_directories(include)
 
-set(SOURCE source/main.cpp source/main.cpp include/node.hpp include/treeLoader.hpp)
+set(SOURCE source/main.cpp source/ValueType.cpp)
 
 add_executable(morph ${SOURCE})
