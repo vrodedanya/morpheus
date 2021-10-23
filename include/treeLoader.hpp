@@ -38,7 +38,7 @@ namespace morph
 			line = line.substr(node_name.size());
 
 			std::string value = line.substr(line.find('{') + 1, line.find('}') - line.find('{') - 1 );
-			if constexpr(std::is_base_of<ValueType, T>::value)
+			if constexpr (std::is_base_of<ValueType, T>::value)
 			{
 				newNode->value.registerData();
 				newNode->value.getData(value);

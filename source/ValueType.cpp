@@ -8,6 +8,43 @@ void morph::ValueType::setData(Mandatory type, const std::string& name, std::str
 	data[name] = Value{type, newData};
 }
 
+// Returns -1 if '=' isn't in line
+static std::size_t getKey(const std::string& line, const std::string& key, std::string& keyBuffer)
+{
+	std::size_t begin = line.find(key);
+	std::size_t end = line.find('=');
+	if (begin == std::string::npos || end == std::string::npos) return -1;
+	keyBuffer = line.substr(begin, end - begin);
+	keyBuffer.erase(std::remove(keyBuffer.begin(), keyBuffer.end(), ' '), keyBuffer.end());
+	return end;
+}
+
+// Return -1 if '"' aren't in line
+static std::size_t getValue(const std::string& line, std::string& value, std::size_t position)
+{
+	std::size_t valueBegin = line.find('"', position) + 1;
+	std::size_t valueEnd  = line.find('"', valueBegin + 1);
+	if (valueBegin == std::string::npos || valueEnd == std::string::npos)
+	{
+		return -1;
+	}
+	value = line.substr(valueBegin, valueEnd - valueBegin);
+	return valueEnd;
+}
+
+// Return -1 if line ends
+static std::size_t reduceLine(std::string& line)
+{
+	std::size_t valueType = line.find(',');
+	if (valueType == std::string::npos)
+	{
+		return -1;
+	}
+	std::string value = line.substr(valueType + 1);
+	line = value;
+	return 1;
+}
+
 void morph::ValueType::getData(const std::string& line)
 {
 	for (auto& elem : data)
@@ -16,36 +53,21 @@ void morph::ValueType::getData(const std::string& line)
 		bool isInited = false;
 		while (bufferLine.size() > elem.first.size())
 		{
-			std::size_t begin = bufferLine.find(elem.first);
-			std::size_t end = bufferLine.find('=');
-			if (begin == std::string::npos || end == std::string::npos) break;
-			std::string buffer = bufferLine.substr(begin, end - begin);
-			buffer.erase(std::remove(buffer.begin(), buffer.end(), ' '), buffer.end());
-			if (elem.first == buffer)
+			std::string key;
+			std::size_t keyEnd = getKey(bufferLine, elem.first, key);
+			if (keyEnd == -1) break;
+			if (elem.first == key)
 			{
-				std::size_t valueBegin = bufferLine.find('"', end);
-				std::size_t valueEnd  = bufferLine.find('"', valueBegin + 1);
-				if (valueBegin == std::string::npos || valueEnd == std::string::npos)
-				{
-					throw std::runtime_error("getData: Bad string format for " + buffer);
-				}
-				else
-				{
-					std::string value = bufferLine.substr(valueBegin + 1, valueEnd - valueBegin - 1);
-					*elem.second.data = value;
-				}
+				std::string value;
+				std::size_t valueEnd = getValue(bufferLine, value, keyEnd);
+				if (valueEnd == -1) throw std::runtime_error("getData: Bad string format for " + key);
+				*elem.second.data = value;
 				isInited = true;
 				break;
 			}
 			else
 			{
-				std::size_t valueType = bufferLine.find(',');
-				if (valueType == std::string::npos)
-				{
-					break;
-				}
-				std::string value = bufferLine.substr(valueType + 1);
-				bufferLine = value;
+				if (reduceLine(bufferLine) == -1) break;
 			}
 		}
 		if (!isInited)

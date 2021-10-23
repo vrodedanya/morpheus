@@ -6,11 +6,13 @@ class Scenario : public morph::ValueType
 public:
 	void registerData() override
 	{
-		setData(Mandatory::MANDATORY, "answer", &test1);
-		setData(Mandatory::OPTIONAL, "filename", &test2);
+		setData(Mandatory::MANDATORY, "message1", &message1);
+		setData(Mandatory::MANDATORY, "message2", &message2);
+		setData(Mandatory::OPTIONAL, "message3", &message3);
 	}
-	std::string test1;
-	std::string test2;
+	std::string message1;
+	std::string message2;
+	std::string message3;
 };
 
 template<typename T>
@@ -26,11 +28,19 @@ std::ostream& operator << (std::ostream& os, const std::vector<T> vec)
 
 int main()
 {
-	auto t = morph::treeLoader<Scenario>::load("scenario.cfg");
+	auto t = morph::treeLoader<Scenario>::load("scenario1.cfg");
 	std::string answer;
+	t = t->get("begin");
 	while (true)
 	{
-		std::cout << t->value.test1 << " with " << t->value.test2 << std::endl;
+		std::cout <<
+		"Message 1: " << t->value.message1 <<
+		"\nMessage 2: " << t->value.message2;
+		if (!t->value.message3.empty())
+		{
+			std::cout << "\nMessage 3: " << t->value.message3;
+		}
+		std::cout << std::endl;
 		if (!t->size()) break;
 		std::cout << "Available answers: "<< t->getAvailableNodes() << std::endl;
 		std::getline(std::cin, answer);
