@@ -33,9 +33,8 @@ int main()
 	t = t->get("begin");
 	while (true)
 	{
-		std::cout <<
-		"Message 1: " << t->value.message1 <<
-		"\nMessage 2: " << t->value.message2;
+		std::cout << "Message 1: " << t->value.message1 << "\n";
+		std::cout << "Message 2: " << t->value.message2;
 		if (!t->value.message3.empty())
 		{
 			std::cout << "\nMessage 3: " << t->value.message3;

@@ -103,9 +103,9 @@ namespace morph
 	template<typename T>
 	void TreeLoader<T>::addChilds(nodeTemplatePtr<T>& root, nodeTemplatePtr<T>& newNode, std::string& line)
 	{
-		if (line.find(':') != std::string::npos)
+		if (line.find("->") != std::string::npos)
 		{
-			line = line.substr(line.find(':') + 1);
+			line = line.substr(line.find("->") + 1);
 			std::string subNode_name;
 			while (line.find('[') != std::string::npos)
 			{
