@@ -9,10 +9,11 @@ namespace morph
 	class ValueType
 	{
 	protected: // METHODS
-		enum class Mandatory{
+		enum class Mandatory
+		{
 			OPTIONAL,
 			MANDATORY,
-			};
+		};
 
 		// Implement this method for your data
 		virtual void registerData() = 0;
@@ -33,7 +34,7 @@ namespace morph
 		std::map<std::string, Value> data;
 
 		template<typename T>
-		friend class treeLoader;
+		friend class TreeLoader;
 	};
 }
 

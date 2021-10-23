@@ -1,5 +1,5 @@
 #include <iostream>
-#include <treeLoader.hpp>
+#include <TreeLoader.hpp>
 
 class Scenario : public morph::ValueType
 {
@@ -28,7 +28,7 @@ std::ostream& operator << (std::ostream& os, const std::vector<T> vec)
 
 int main()
 {
-	auto t = morph::treeLoader<Scenario>::load("scenario1.cfg");
+	auto t = morph::TreeLoader<Scenario>::parseFromData("scenario1.cfg");
 	std::string answer;
 	t = t->get("begin");
 	while (true)
