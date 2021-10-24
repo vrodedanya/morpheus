@@ -28,7 +28,7 @@ namespace morph
 	private:
 		static void parse(nodeTemplatePtr<T>& root, std::string line);
 
-		static void addChilds(nodeTemplatePtr<T>& root, nodeTemplatePtr<T>& newNode, std::string& line);
+		static void addChildren(nodeTemplatePtr<T>& root, nodeTemplatePtr<T>& newNode, std::string& line);
 	};
 
 	std::string loadDataFromFile(const std::string& file)
@@ -97,11 +97,11 @@ namespace morph
 			}
 			newNode->setLevel(level + 1);
 		}
-		addChilds(root, newNode, line);
+		addChildren(root, newNode, line);
 	}
 
 	template<typename T>
-	void TreeLoader<T>::addChilds(nodeTemplatePtr<T>& root, nodeTemplatePtr<T>& newNode, std::string& line)
+	void TreeLoader<T>::addChildren(nodeTemplatePtr<T>& root, nodeTemplatePtr<T>& newNode, std::string& line)
 	{
 		if (line.find("->") != std::string::npos)
 		{
