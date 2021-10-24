@@ -4,6 +4,6 @@ project(morpheus)
 
 include_directories(include)
 
-set(SOURCE source/main.cpp source/ValueType.cpp)
+set(MORPH_SOURCES source/ValueType.cpp)
 
-add_executable(morph ${SOURCE})
+add_library(morph STATIC ${MORPH_SOURCES})
