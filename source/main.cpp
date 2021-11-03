@@ -1,7 +1,7 @@
 #include <iostream>
-#include <TreeLoader.hpp>
+#include <morpheus/morpheus.hpp>
 
-class Scenario : public morph::ValueType
+class Scenario : public morph::HasDataType
 {
 public:
 	void registerData() override
@@ -28,7 +28,7 @@ std::ostream& operator << (std::ostream& os, const std::vector<T> vec)
 
 int main()
 {
-	auto t = morph::TreeLoader<Scenario>::parseFromData("scenario1.cfg");
+	auto t = morph::Loader<Scenario>::parseFromData("file.scen");
 	std::string answer;
 	t = t->get("begin");
 	while (true)
@@ -40,7 +40,7 @@ int main()
 			std::cout << "\nMessage 3: " << t->value.message3;
 		}
 		std::cout << std::endl;
-		if (!t->size()) break;
+		if (t->isEmpty()) break;
 		std::cout << "Available answers: "<< t->getAvailableNodes() << std::endl;
 		std::getline(std::cin, answer);
 		auto buf = t->get(answer);

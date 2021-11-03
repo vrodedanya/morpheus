@@ -1,9 +1,9 @@
-#include "ValueType.hpp"
+#include <morpheus/HasDataType.hpp>
 
 #include <stdexcept>
 #include <algorithm>
 
-void morph::ValueType::setData(Mandatory type, const std::string& name, std::string* newData)
+void morph::HasDataType::setData(Mandatory type, const std::string& name, std::string* newData)
 {
 	data[name] = Value{type, newData};
 }
@@ -45,7 +45,7 @@ static std::size_t reduceLine(std::string& line)
 	return 1;
 }
 
-void morph::ValueType::getData(const std::string& line)
+void morph::HasDataType::getData(const std::string& line)
 {
 	for (auto& elem : data)
 	{

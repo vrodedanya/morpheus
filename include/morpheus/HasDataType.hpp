@@ -1,12 +1,12 @@
-#ifndef MORPHEUS_VALUETYPE_HPP
-#define MORPHEUS_VALUETYPE_HPP
+#ifndef MORPHEUS_HASDATATYPE_HPP
+#define MORPHEUS_HASDATATYPE_HPP
 
 #include <map>
 #include <string>
 
 namespace morph
 {
-	class ValueType
+	class HasDataType
 	{
 	protected: // METHODS
 		enum class Mandatory
@@ -34,8 +34,8 @@ namespace morph
 		std::map<std::string, Value> data;
 
 		template<typename T>
-		friend class TreeLoader;
+		friend class Loader;
 	};
 }
 
-#endif //MORPHEUS_VALUETYPE_HPP
+#endif //MORPHEUS_HASDATATYPE_HPP

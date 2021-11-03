@@ -20,12 +20,12 @@ If you use string you can write your text to `{}` without "". For example:<br>
 - 'dependencies' - sub nodes name
 
 For parse config file use<br>
-`morph::TreeLoader<DataType>::parseFromData("<scenario name>>")`
+`morph::Loader<DataType>::parseFromData("<scenario name>>")`
 - DataType - your data type. You can use std::string or another types for which implemented operator = with std::string.
-For your own types create class and inherit ValueType. You need to implement registerData method and create fields.
+For your own types create class and inherit HasDataType. You need to implement registerData method and create fields.
 Example of user data type:<br>
     ```
-    class Scenario : public morph::ValueType
+    class Scenario : public morph::HasDataType
     {
     public:
         void registerData() override
@@ -76,7 +76,7 @@ message3 = "break"
 ```
 int main()
 {
-	auto t = morph::TreeLoader<Scenario>::parseFromData("scenario1.cfg");
+	auto t = morph::Loader<Scenario>::parseFromData("scenario1.cfg");
 	std::string answer;
 	t = t->get("begin");
 	while (true)
@@ -88,7 +88,7 @@ int main()
 			std::cout << "\nMessage 3: " << t->value.message3;
 		}
 		std::cout << std::endl;
-		if (!t->size()) break;
+		if (!t->count()) break;
 		std::cout << "Available answers: "<< t->getAvailableNodes() << std::endl;
 		std::getline(std::cin, answer);
 		auto buf = t->get(answer);

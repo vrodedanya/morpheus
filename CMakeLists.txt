@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.0.0)
 
-project(morpheus)
+project(morpheusLibrary)
 
 include_directories(include)
 
-set(MORPH_SOURCES source/ValueType.cpp)
+set(MORPH_SOURCES source/HasDataType.cpp)
 
-add_library(morph STATIC ${MORPH_SOURCES})
+add_library(morpheus STATIC ${MORPH_SOURCES})

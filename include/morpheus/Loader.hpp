@@ -1,10 +1,10 @@
-#ifndef MORPHEUS_TREELOADER_HPP
-#define MORPHEUS_TREELOADER_HPP
+#ifndef MORPHEUS_LOADER_HPP
+#define MORPHEUS_LOADER_HPP
 
-#include <Node.hpp>
+#include <morpheus/Node.hpp>
 #include <fstream>
 #include <type_traits>
-#include <ValueType.hpp>
+#include <morpheus/HasDataType.hpp>
 #include <sstream>
 
 namespace morph
@@ -14,34 +14,34 @@ namespace morph
 	 */
 	std::string loadDataFromFile(const std::string& file);
 
-	template <typename T>
-	class TreeLoader
+	template <typename DATA_TYPE>
+	class Loader
 	{
 	public:
-		TreeLoader() = delete;
+		Loader() = delete;
 
 		/*
 		 *  Creates tree from data
 		 */
-		static nodeTemplatePtr<T> parseFromData(const std::string& file);
+		static nodeTemplatePtr<DATA_TYPE> parseFromData(const std::string& file);
 
 	private:
-		static void parse(nodeTemplatePtr<T>& root, std::string line);
+		static void parse(nodeTemplatePtr<DATA_TYPE>& root, std::string line);
 
-		static void addChildren(nodeTemplatePtr<T>& root, nodeTemplatePtr<T>& newNode, std::string& line);
+		static void addChildren(nodeTemplatePtr<DATA_TYPE>& root, nodeTemplatePtr<DATA_TYPE>& newNode, std::string& line);
 	};
 
 	std::string loadDataFromFile(const std::string& file)
 	{
 		std::ifstream f(file);
-		std::string sheet;
-		std::string buffer;
-		while (std::getline(f, buffer)){sheet += buffer;}
-		return sheet;
+		if (!f.is_open()) throw std::ios_base::failure("Failed to open file: " + file);
+		std::stringstream bufferString;
+		bufferString << f.rdbuf();
+		return bufferString.str();
 	}
 
 	template<typename T>
-	nodeTemplatePtr<T> TreeLoader<T>::parseFromData(const std::string& file)
+	nodeTemplatePtr<T> Loader<T>::parseFromData(const std::string& file)
 	{
 		std::string sheet = loadDataFromFile(file);
 		std::stringstream sheetStream;
@@ -62,7 +62,7 @@ namespace morph
 	}
 
 	template<typename T>
-	void TreeLoader<T>::parse(nodeTemplatePtr<T>& root, std::string line)
+	void Loader<T>::parse(nodeTemplatePtr<T>& root, std::string line)
 	{
 		nodeTemplatePtr<T> newNode = std::make_shared<Node<T>>();
 
@@ -70,7 +70,7 @@ namespace morph
 		line = line.substr(node_name.size());
 
 		std::string value = line.substr(line.find('{') + 1, line.find('}') - line.find('{') - 1 );
-		if constexpr (std::is_base_of<ValueType, T>::value)
+		if constexpr (std::is_base_of<HasDataType, T>::value)
 		{
 			newNode->value.registerData();
 			newNode->value.getData(value);
@@ -80,7 +80,7 @@ namespace morph
 			newNode->value = value;
 		}
 
-		if (!root->size())
+		if (!root->count())
 		{
 			newNode->setLevel(1);
 			root->add(node_name, newNode);
@@ -101,7 +101,7 @@ namespace morph
 	}
 
 	template<typename T>
-	void TreeLoader<T>::addChildren(nodeTemplatePtr<T>& root, nodeTemplatePtr<T>& newNode, std::string& line)
+	void Loader<T>::addChildren(nodeTemplatePtr<T>& root, nodeTemplatePtr<T>& newNode, std::string& line)
 	{
 		if (line.find("->") != std::string::npos)
 		{
@@ -118,4 +118,4 @@ namespace morph
 	}
 }
 
-#endif //MORPHEUS_TREELOADER_HPP
+#endif //MORPHEUS_LOADER_HPP

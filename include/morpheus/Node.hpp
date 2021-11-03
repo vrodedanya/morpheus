@@ -53,7 +53,9 @@ namespace morph
         /*
          *  Returns childs count
          */
-	    std::size_t size() const noexcept { return childs.size(); }
+	    std::size_t count() const noexcept { return childs.size(); }
+
+	    bool isEmpty() const noexcept { return childs.size() == 0; }
 
 	    /*
 	     *  Returns available nodes names
