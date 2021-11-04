@@ -23,7 +23,8 @@ namespace morph
 		/*
 		 *  Creates tree from data
 		 */
-		static nodeTemplatePtr<DATA_TYPE> parseFromData(const std::string& file);
+		static nodeTemplatePtr<DATA_TYPE> parseFromData(const std::string& data);
+		static nodeTemplatePtr<DATA_TYPE> parseFromFile(const std::string& file);
 
 	private:
 		static void parse(nodeTemplatePtr<DATA_TYPE>& root, std::string line);
@@ -41,7 +42,28 @@ namespace morph
 	}
 
 	template<typename T>
-	nodeTemplatePtr<T> Loader<T>::parseFromData(const std::string& file)
+	nodeTemplatePtr<T> Loader<T>::parseFromData(const std::string& data)
+	{
+		std::stringstream sheetStream;
+
+		sheetStream << data;
+		nodeTemplatePtr<T> root = std::make_shared<Node<T>>();
+
+		std::string line;
+		while (std::getline(sheetStream, line, ';'))
+		{
+			if (!line.empty())
+			{
+				parse(root, line);
+				line.clear();
+			}
+		}
+		return root;
+	}
+
+
+	template<typename T>
+	nodeTemplatePtr<T> Loader<T>::parseFromFile(const std::string& file)
 	{
 		std::string sheet = loadDataFromFile(file);
 		std::stringstream sheetStream;
