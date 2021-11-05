@@ -70,6 +70,7 @@ namespace morph
 		sheetStream << sheet;
 
 		nodeTemplatePtr<T> root = std::make_shared<Node<T>>();
+		root->setRoot(root);
 
 		std::string line;
 		while (std::getline(sheetStream, line, ';'))
@@ -80,6 +81,7 @@ namespace morph
 				line.clear();
 			}
 		}
+		if (!root->isEmpty()) root = root->getChilds().begin()->second;
 		return root;
 	}
 
@@ -87,6 +89,7 @@ namespace morph
 	void Loader<T>::parse(nodeTemplatePtr<T>& root, std::string line)
 	{
 		nodeTemplatePtr<T> newNode = std::make_shared<Node<T>>();
+		newNode->setRoot(root);
 
 		std::string node_name = line.substr(line.find('[') + 1, line.find(']') - line.find('[') -1);
 		line = line.substr(node_name.size());

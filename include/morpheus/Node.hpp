@@ -74,11 +74,16 @@ namespace morph
 	     */
 	    void setLevel(size_t newLevel) { level =  newLevel; }
 
+	    nodePtr getRoot() const;
+
+	    void setRoot(nodePtr root);
+
     public:
     	VALUE_TYPE value;
     private:
     	std::vector<std::string> availableNodes;
         std::map<std::string, nodePtr> childs;
+        nodePtr root;
         std::size_t level{};
     };
 
@@ -175,6 +180,18 @@ namespace morph
 		});
 		if (it == childs.cend()) return nullptr;
 		return (*it).second;
+	}
+
+	template<typename VALUE_TYPE>
+	nodeTemplatePtr<VALUE_TYPE> Node<VALUE_TYPE>::getRoot() const
+	{
+		return root;
+	}
+
+	template<typename VALUE_TYPE>
+	void Node<VALUE_TYPE>::setRoot(nodeTemplatePtr<VALUE_TYPE> root)
+	{
+		Node::root = root;
 	}
 }
 
