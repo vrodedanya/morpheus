@@ -29,27 +29,28 @@ namespace morph
         /*
          *  Finds child with 'name' and returns it
          */
-        nodePtr find(std::string name);
+        nodePtr find(std::string name) const;
 
         /*
          *  Finds parent of child with name 'name' and returns it
          */
-        Node* findParentOf(std::string name);
+        Node* findParentOf(std::string name) const;
 
         /*
          *  Finds all parents of child with name 'name' and returns vector of them
          */
-        std::vector<Node*> findAllParentsOf(std::string name);
+        std::vector<Node*> findAllParentsOf(std::string name) const;
 
         /*
          *  Returns current node childs
          */
-        nodePtr get(std::string name);
+        nodePtr get(std::string name) const;
 
         /*
          *  Returns childs of node
          */
-        std::map<std::string, nodePtr>& getChilds(){ return childs; }
+        std::map<std::string, nodePtr>& getChilds() { return childs; }
+        const std::map<std::string, nodePtr>& getChilds() const { return childs; }
 
         /*
          *  Returns childs count
@@ -99,7 +100,7 @@ namespace morph
 	}
 
 	template<typename T>
-	nodeTemplatePtr<T> Node<T>::find(std::string name)
+	nodeTemplatePtr<T> Node<T>::find(std::string name) const
 	{
 		auto it = std::find_if(childs.cbegin(), childs.cend(), [node_name = name](const auto& pair)
 		{
@@ -119,7 +120,7 @@ namespace morph
 	}
 
 	template<typename T>
-	Node<T>* Node<T>::findParentOf(std::string name)
+	Node<T>* Node<T>::findParentOf(std::string name) const
 	{
 		auto it = std::find_if(childs.cbegin(), childs.cend(), [node_name = name](const auto& pair)
 		{
@@ -139,7 +140,7 @@ namespace morph
 	}
 
 	template<typename T>
-	std::vector<Node<T>*> Node<T>::findAllParentsOf(std::string name)
+	std::vector<Node<T>*> Node<T>::findAllParentsOf(std::string name) const
 	{
 		std::vector<Node*> parents;
 		auto it = std::find_if(childs.cbegin(), childs.cend(), [node_name = name](const auto& pair)
@@ -148,7 +149,7 @@ namespace morph
 		});
 		if (it != childs.cend())
 		{
-			parents.push_back(this);
+			parents.push_back(const_cast<morph::Node<T>*>(this));
 		}
 		for (const auto& elem : childs)
 		{
@@ -166,7 +167,7 @@ namespace morph
 	}
 
 	template<typename T>
-	nodeTemplatePtr<T> Node<T>::get(std::string name)
+	nodeTemplatePtr<T> Node<T>::get(std::string name) const
 	{
 		auto it = std::find_if(childs.cbegin(), childs.cend(), [node_name = std::move(name)](const auto& pair)
 		{
