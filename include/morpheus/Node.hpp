@@ -1,6 +1,7 @@
 #ifndef MORPHEUS_NODE_HPP
 #define MORPHEUS_NODE_HPP
 
+#include <ostream>
 #include <map>
 #include <string>
 #include <stdexcept>
