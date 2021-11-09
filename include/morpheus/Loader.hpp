@@ -32,15 +32,6 @@ namespace morph
 		static void addChildren(nodeTemplatePtr<DATA_TYPE>& root, nodeTemplatePtr<DATA_TYPE>& newNode, std::string& line);
 	};
 
-	std::string loadDataFromFile(const std::string& file)
-	{
-		std::ifstream f(file);
-		if (!f.is_open()) throw std::ios_base::failure("Failed to open file: " + file);
-		std::stringstream bufferString;
-		bufferString << f.rdbuf();
-		return bufferString.str();
-	}
-
 	template<typename T>
 	nodeTemplatePtr<T> Loader<T>::parseFromData(const std::string& data)
 	{
@@ -114,7 +105,7 @@ namespace morph
 		{
 			auto bufVector = root->findAllParentsOf(node_name);
 			if (bufVector.empty()) throw std::runtime_error("Dangling Node '" + node_name + "'");
-			int level = 0;
+			std::size_t level = 0;
 			for (auto& buf : bufVector)
 			{
 				if (buf->getLevel() > level) level = buf->getLevel();
