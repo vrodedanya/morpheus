@@ -72,7 +72,7 @@ void morph::HasDataType::getData(const std::string& line)
 		}
 		if (!isInited)
 		{
-			if (elem.second.type == Mandatory::MANDATORY) throw std::runtime_error(elem.first + " is mandatory!");
+			if (elem.second.type == Mandatory::MANDATORY) throw std::runtime_error(elem.first + " is mandatory!\nCan't find in " + line);
 		}
 	}
 }
