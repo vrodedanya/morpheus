@@ -10,7 +10,7 @@
 namespace morph
 {
 	/*
-	 *  Loads all _data from file and returns std::string
+	 *  Loads all data from file and returns std::string
 	 */
 	std::string loadDataFromFile(const std::string& file);
 
@@ -21,24 +21,26 @@ namespace morph
 		Loader() = delete;
 
 		/*
-		 *  Creates tree from _data
+		 *  Creates tree from data
 		 */
-		static nodeTemplatePtr<DATA_TYPE> parseFromData(const std::string& data);
-		static nodeTemplatePtr<DATA_TYPE> parseFromFile(const std::string& file);
+		static node_templatePtr<DATA_TYPE> parseFromData(const std::string& data);
+		static node_templatePtr<DATA_TYPE> parseFromFile(const std::string& file);
 
 	private:
-		static void parse(nodeTemplatePtr<DATA_TYPE>& root, std::string line);
+		static void parse(node_templatePtr<DATA_TYPE>& root, std::string line);
 
-		static void addChildren(nodeTemplatePtr<DATA_TYPE>& root, nodeTemplatePtr<DATA_TYPE>& newNode, std::string& line);
+		static void addChildren(node_templatePtr<DATA_TYPE>& root, node_templatePtr<DATA_TYPE>& newNode, std::string& line);
 	};
 
-	template<typename T>
-	nodeTemplatePtr<T> Loader<T>::parseFromData(const std::string& data)
+	template <typename T>
+	node_templatePtr<T> Loader<T>::parseFromData(const std::string& data)
 	{
 		std::stringstream sheetStream;
 
 		sheetStream << data;
-		nodeTemplatePtr<T> root = std::make_shared<Node<T>>();
+		node_templatePtr<T> root = std::make_shared<Node<T>>();
+		root->setName("root");
+		root->setRoot(root);
 
 		if constexpr (std::is_base_of<HasDataType<T>, T>::value)
 		{
@@ -60,23 +62,24 @@ namespace morph
 			T::clear();
 		}
 
-		return root;
+		return root->getChilds().begin()->second;
 	}
 
 
-	template<typename T>
-	nodeTemplatePtr<T> Loader<T>::parseFromFile(const std::string& file)
+	template <typename T>
+	node_templatePtr<T> Loader<T>::parseFromFile(const std::string& file)
 	{
 		return parseFromData(loadDataFromFile(file));
 	}
 
-	template<typename T>
-	void Loader<T>::parse(nodeTemplatePtr<T>& root, std::string line)
+	template <typename T>
+	void Loader<T>::parse(node_templatePtr<T>& root, std::string line)
 	{
-		nodeTemplatePtr<T> newNode = std::make_shared<Node<T>>();
+		node_templatePtr<T> newNode = std::make_shared<Node<T>>();
 		newNode->setRoot(root);
 
-		std::string node_name = line.substr(line.find('[') + 1, line.find(']') - line.find('[') -1);
+		std::string node_name = line.substr(line.find('[') + 1, line.find(']') - line.find('[') - 1);
+		newNode->setName(node_name);
 		line = line.substr(node_name.size());
 
 		std::string value = line.substr(line.find('{') + 1, line.find('}') - line.find('{') - 1 );
@@ -103,15 +106,15 @@ namespace morph
 			for (auto& buf : bufVector)
 			{
 				if (buf->getLevel() > level) level = buf->getLevel();
-				buf->getChilds()[node_name] = newNode;
+				buf->add(node_name, newNode);
 			}
 			newNode->setLevel(level + 1);
 		}
 		addChildren(root, newNode, line);
 	}
 
-	template<typename T>
-	void Loader<T>::addChildren(nodeTemplatePtr<T>& root, nodeTemplatePtr<T>& newNode, std::string& line)
+	template <typename T>
+	void Loader<T>::addChildren(node_templatePtr<T>& root, node_templatePtr<T>& newNode, std::string& line)
 	{
 		if (line.find("->") != std::string::npos)
 		{
