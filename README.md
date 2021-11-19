@@ -2,6 +2,11 @@
 ### Description
 Morpheus is a simple library for make scenario tree
 
+### Installing
+- Recommended approach to use cmake FetchContent
+- Morpheus CMakeLists.txt create static library, so after you call FetchContent_MakeAvailable CMake creates dependency,
+so you can just add library to your executable by 'target_link_libraries' or by something else what you prefer
+
 ### Usage
 Morpheus uses config file for create scenario tree. Config file contains description of scenario. Format:<br>
 ```
