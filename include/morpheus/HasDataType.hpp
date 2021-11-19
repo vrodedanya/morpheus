@@ -8,7 +8,7 @@
 
 namespace morph
 {
-	template<typename SCENARIO_CLASS>
+	template <typename SCENARIO_CLASS>
 	class HasDataType
 	{
 	protected: // METHODS
@@ -43,25 +43,24 @@ namespace morph
 		static inline std::map<std::string, Value> _data;
 
 
-		template<typename T>
+		template <typename T>
 		friend class Loader;
 	};
 
-	template<typename T>
-	void HasDataType<T>::setData(Mandatory type, const std::string& name, std::string T::* element)
+	template <typename SCENARIO_CLASS>
+	void HasDataType<SCENARIO_CLASS>::setData(Mandatory type, const std::string& name, std::string SCENARIO_CLASS::* element)
 	{
 		_data[name] = Value{type, element};
 	}
 
-	template<typename T>
-
-	void HasDataType<T>::clear()
+	template <typename SCENARIO_CLASS>
+	void HasDataType<SCENARIO_CLASS>::clear()
 	{
 		_data.clear();
 	}
 
-	template <typename T>
-	void morph::HasDataType<T>::getData(const std::string& line)
+	template <typename SCENARIO_CLASS>
+	void morph::HasDataType<SCENARIO_CLASS>::getData(const std::string& line)
 	{
 		for (auto& elem : _data)
 		{
@@ -78,7 +77,7 @@ namespace morph
 					int valueEnd = getValue(bufferLine, value, keyEnd);
 					if (valueEnd == -1) throw std::runtime_error("getData: Bad string format for " + key);
 					//*elem.second.data = value;
-					(*static_cast<T*>(this)).*elem.second.data = value;
+					(*static_cast<SCENARIO_CLASS*>(this)).*elem.second.data = value;
 					isInited = true;
 					break;
 				}
@@ -95,8 +94,8 @@ namespace morph
 	}
 
 
-	template <typename T>
-	int morph::HasDataType<T>::getKey(const std::string& line, const std::string& key, std::string& keyBuffer)
+	template <typename SCENARIO_CLASS>
+	int morph::HasDataType<SCENARIO_CLASS>::getKey(const std::string& line, const std::string& key, std::string& keyBuffer)
 	{
 		std::size_t begin = line.find(key);
 		std::size_t end = line.find('=');
@@ -106,8 +105,8 @@ namespace morph
 		return static_cast<int>(end);
 	}
 
-	template <typename T>
-	int morph::HasDataType<T>::getValue(const std::string& line, std::string& value, std::size_t position)
+	template <typename SCENARIO_CLASS>
+	int morph::HasDataType<SCENARIO_CLASS>::getValue(const std::string& line, std::string& value, std::size_t position)
 	{
 		std::size_t valueBegin = line.find('"', position) + 1;
 		std::size_t valueEnd  = line.find('"', valueBegin + 1);
@@ -119,8 +118,8 @@ namespace morph
 		return static_cast<int>(valueEnd);
 	}
 
-	template <typename T>
-	int morph::HasDataType<T>::reduceLine(std::string& line)
+	template <typename SCENARIO_CLASS>
+	int morph::HasDataType<SCENARIO_CLASS>::reduceLine(std::string& line)
 	{
 		std::size_t valueType = line.find(',');
 		if (valueType == std::string::npos)
