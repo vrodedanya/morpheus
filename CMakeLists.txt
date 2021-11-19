@@ -6,6 +6,6 @@ include_directories(include)
 
 add_compile_options(-Wall -Wextra)
 
-set(MORPH_SOURCES source/HasDataType.cpp source/Loader.cpp)
+set(MORPH_SOURCES source/Loader.cpp include/morpheus/HasDataType.hpp)
 
 add_library(morpheus STATIC ${MORPH_SOURCES})

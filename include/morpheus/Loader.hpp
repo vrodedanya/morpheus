@@ -10,7 +10,7 @@
 namespace morph
 {
 	/*
-	 *  Loads all data from file and returns std::string
+	 *  Loads all _data from file and returns std::string
 	 */
 	std::string loadDataFromFile(const std::string& file);
 
@@ -21,7 +21,7 @@ namespace morph
 		Loader() = delete;
 
 		/*
-		 *  Creates tree from data
+		 *  Creates tree from _data
 		 */
 		static nodeTemplatePtr<DATA_TYPE> parseFromData(const std::string& data);
 		static nodeTemplatePtr<DATA_TYPE> parseFromFile(const std::string& file);
@@ -40,6 +40,11 @@ namespace morph
 		sheetStream << data;
 		nodeTemplatePtr<T> root = std::make_shared<Node<T>>();
 
+		if constexpr (std::is_base_of<HasDataType<T>, T>::value)
+		{
+			root->value.registerData();
+		}
+
 		std::string line;
 		while (std::getline(sheetStream, line, ';'))
 		{
@@ -49,6 +54,12 @@ namespace morph
 				line.clear();
 			}
 		}
+
+		if constexpr (std::is_base_of<HasDataType<T>, T>::value)
+		{
+			T::clear();
+		}
+
 		return root;
 	}
 
@@ -56,24 +67,7 @@ namespace morph
 	template<typename T>
 	nodeTemplatePtr<T> Loader<T>::parseFromFile(const std::string& file)
 	{
-		std::string sheet = loadDataFromFile(file);
-		std::stringstream sheetStream;
-		sheetStream << sheet;
-
-		nodeTemplatePtr<T> root = std::make_shared<Node<T>>();
-		root->setRoot(root);
-
-		std::string line;
-		while (std::getline(sheetStream, line, ';'))
-		{
-			if (!line.empty())
-			{
-				parse(root, line);
-				line.clear();
-			}
-		}
-		if (!root->isEmpty()) root = root->getChilds().begin()->second;
-		return root;
+		return parseFromData(loadDataFromFile(file));
 	}
 
 	template<typename T>
@@ -86,7 +80,7 @@ namespace morph
 		line = line.substr(node_name.size());
 
 		std::string value = line.substr(line.find('{') + 1, line.find('}') - line.find('{') - 1 );
-		if constexpr (std::is_base_of<HasDataType, T>::value)
+		if constexpr (std::is_base_of<HasDataType<T>, T>::value)
 		{
 			newNode->value.registerData();
 			newNode->value.getData(value);

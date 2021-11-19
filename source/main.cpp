@@ -1,18 +1,16 @@
 #include <iostream>
 #include <morpheus/morpheus.hpp>
 
-class Scenario : public morph::HasDataType
+class Scenario : public morph::HasDataType<Scenario>
 {
 public:
 	void registerData() override
 	{
-		setData(Mandatory::MANDATORY, "message1", &message1);
-		setData(Mandatory::MANDATORY, "message2", &message2);
-		setData(Mandatory::OPTIONAL, "message3", &message3);
+		setData(Mandatory::MANDATORY, "message1", &Scenario::message1);
+		setData(Mandatory::MANDATORY, "message2", &Scenario::message2);
 	}
 	std::string message1;
 	std::string message2;
-	std::string message3;
 };
 
 template<typename T>
@@ -34,10 +32,6 @@ int main()
 	{
 		std::cout << "Message 1: " << t->value.message1 << "\n";
 		std::cout << "Message 2: " << t->value.message2;
-		if (!t->value.message3.empty())
-		{
-			std::cout << "\nMessage 3: " << t->value.message3;
-		}
 		std::cout << std::endl;
 		if (t->isEmpty()) break;
 		std::cout << "Available answers: "<< t->getAvailableNodes() << std::endl;

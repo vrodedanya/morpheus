@@ -25,17 +25,18 @@ or <br>
 `morph::Loader<DataType>::parseFromData("<scenario data>")`<br>
 First for parsing file. Second for parsing std::string.
 - DataType - your data type. You can use std::string or another types for which implemented operator = with std::string.
-For your own types create class and inherit HasDataType. You need to implement registerData method and create fields.
+For your own types create class and inherit HasDataType with specifying template argument by your class name. You need 
+to implement registerData method and create fields.
 Example of user data type:<br>
     ```
-    class Scenario : public morph::HasDataType
+    class Scenario : public morph::HasDataType<Scenario>
     {
     public:
         void registerData() override
         {
-            setData(Mandatory::MANDATORY, "message1", &message1);
-            setData(Mandatory::MANDATORY, "message2", &message2);
-            setData(Mandatory::OPTIONAL, "message3", &message3);
+            setData(Mandatory::MANDATORY, "message1", &Scenario::message1);
+            setData(Mandatory::MANDATORY, "message2", &Scenario::message2);
+            setData(Mandatory::OPTIONAL, "message3", &Scenario::message3);
         }
         std::string message1;
         std::string message2;
