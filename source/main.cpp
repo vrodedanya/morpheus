@@ -26,21 +26,19 @@ std::ostream& operator << (std::ostream& os, const std::vector<T> vec)
 
 int main()
 {
-		auto t = morph::Loader<Scenario>::parseFromFile("file.scen");
-		t->print(std::cerr);
+	auto t = morph::Loader<Scenario>::parseFromFile("file.scen");
+	t.root()->print(std::cerr);
 
 	std::string answer;
 	while (true)
 	{
-		std::cout << "Message 1: " << t->value.message1 << "\n";
-		std::cout << "Message 2: " << t->value.message2;
+		std::cout << "Message 1: " << t.node()->value.message1 << "\n";
+		std::cout << "Message 2: " << t.node()->value.message2;
 		std::cout << std::endl;
-		if (t->isEmpty()) break;
-		std::cout << "Available answers: "<< t->getAvailableNodes() << std::endl;
+		if (t.node()->isEmpty()) break;
+		std::cout << "Available answers: "<< t.node()->getAvailableNodes() << std::endl;
 		std::getline(std::cin, answer);
-		auto buf = t->get(answer);
-		if (buf == nullptr) std::cout << "Wrong answer! I can't continue dialogue" << std::endl;
-		else t = buf;
+		if (!t.switchNode(answer)) std::cout << "Wrong answer! I can't continue dialogue" << std::endl;
 	}
     return 0;
 }

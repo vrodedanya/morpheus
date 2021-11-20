@@ -4,5 +4,6 @@
 #include "Node.hpp"
 #include "Loader.hpp"
 #include "HasDataType.hpp"
+#include "Tree.hpp"
 
 #endif //MORPHEUS_MORPHEUS_HPP

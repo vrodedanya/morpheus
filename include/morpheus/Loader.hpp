@@ -1,11 +1,12 @@
 #ifndef MORPHEUS_LOADER_HPP
 #define MORPHEUS_LOADER_HPP
 
-#include <morpheus/Node.hpp>
 #include <fstream>
 #include <type_traits>
-#include <morpheus/HasDataType.hpp>
 #include <sstream>
+#include <morpheus/Node.hpp>
+#include <morpheus/HasDataType.hpp>
+#include <morpheus/Tree.hpp>
 
 namespace morph
 {
@@ -23,8 +24,8 @@ namespace morph
 		/*
 		 *  Creates tree from data
 		 */
-		static node_templatePtr<DATA_TYPE> parseFromData(const std::string& data);
-		static node_templatePtr<DATA_TYPE> parseFromFile(const std::string& file);
+		static Tree<DATA_TYPE> parseFromData(const std::string& data);
+		static Tree<DATA_TYPE> parseFromFile(const std::string& file);
 
 	private:
 		static void parse(node_templatePtr<DATA_TYPE>& root, std::string line);
@@ -33,7 +34,7 @@ namespace morph
 	};
 
 	template <typename T>
-	node_templatePtr<T> Loader<T>::parseFromData(const std::string& data)
+	Tree<T> Loader<T>::parseFromData(const std::string& data)
 	{
 		std::stringstream sheetStream;
 
@@ -61,12 +62,17 @@ namespace morph
 			T::clear();
 		}
 
-		return root;
+		Tree<T> tree;
+		tree._root = root;
+		if (!root->isEmpty()) tree._currentNode = root->getChildren().begin()->second;
+		else tree._currentNode = root;
+
+		return tree;
 	}
 
 
 	template <typename T>
-	node_templatePtr<T> Loader<T>::parseFromFile(const std::string& file)
+	Tree<T> Loader<T>::parseFromFile(const std::string& file)
 	{
 		return parseFromData(loadDataFromFile(file));
 	}
