@@ -26,7 +26,9 @@ std::ostream& operator << (std::ostream& os, const std::vector<T> vec)
 
 int main()
 {
-	auto t = morph::Loader<Scenario>::parseFromFile("file.scen");
+		auto t = morph::Loader<Scenario>::parseFromFile("file.scen");
+		t->print(std::cerr);
+
 	std::string answer;
 	while (true)
 	{

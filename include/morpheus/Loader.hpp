@@ -50,10 +50,9 @@ namespace morph
 		std::string line;
 		while (std::getline(sheetStream, line, ';'))
 		{
-			if (!line.empty())
+			if (line.size() > 1)
 			{
 				parse(root, line);
-				line.clear();
 			}
 		}
 
@@ -62,7 +61,7 @@ namespace morph
 			T::clear();
 		}
 
-		return root->getChilds().begin()->second;
+		return root;
 	}
 
 
@@ -106,7 +105,7 @@ namespace morph
 			for (auto& buf : bufVector)
 			{
 				if (buf->getLevel() > level) level = buf->getLevel();
-				buf->add(node_name, newNode);
+				buf->link(node_name, newNode);
 			}
 			newNode->setLevel(level + 1);
 		}

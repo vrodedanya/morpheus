@@ -26,6 +26,8 @@ namespace morph
          */
         inline void add(std::string name, node_ptr newNode);
 
+        inline void link(std::string name, node_ptr newNode);
+
         /*
          *  Finds child with 'name' and returns it
          */
@@ -42,27 +44,29 @@ namespace morph
         std::vector<node_ptr> findAllParentsOf(std::string name) noexcept;
 
         /*
-         *  Returns current node _childs
+         *  Returns current node children
          */
         inline node_ptr get(std::string name) const noexcept;
 
         /*
-         *  Returns _childs of node
+         *  Returns children of node
          */
-        std::map<std::string, node_ptr>& getChilds() { return _childs; }
-        const std::map<std::string, node_ptr>& getChilds() const { return _childs; }
+        std::map<std::string, node_ptr>& getChildren() { return _children; }
+        const std::map<std::string, node_ptr>& getChildren() const { return _children; }
 
         /*
-         *  Returns _childs count
+         *  Returns children count
          */
-	    std::size_t count() const { return _childs.size(); }
+	    std::size_t count() const { return _children.size(); }
 
-	    bool isEmpty() const { return _childs.size() == 0; }
+	    bool isEmpty() const { return _children.size() == 0; }
 
 	    /*
 	     *  Returns available nodes names
 	     */
 	    const std::vector<std::string>& getAvailableNodes() const { return _availableNodes; }
+
+	    void print(std::ostream&) const;
 
 	    /*
 	     *  Returns _level of node
@@ -74,7 +78,7 @@ namespace morph
 	     */
 	    void setLevel(size_t newLevel) { _level =  newLevel; }
 
-	    node_ptr getRoot() const;
+	    node_weakPtr getRoot() const;
 
 	    void setRoot(node_ptr root);
 
@@ -86,7 +90,7 @@ namespace morph
     	VALUE_TYPE value;
     private:
     	std::vector<std::string> _availableNodes;
-        std::map<std::string, node_ptr> _childs;
+        std::map<std::string, node_ptr> _children;
         std::string _name;
         node_weakPtr _root;
         std::size_t _level{};
@@ -112,18 +116,28 @@ namespace morph
 			throw std::runtime_error("morpheus: failed to add new node " + name + " to " + _name + ".\nIt's already exists!");
 		}
 		_availableNodes.push_back(name);
-		_childs[name] = newNode;
+		_children[name] = newNode;
+	}
+
+	template <typename VALUE_TYPE>
+	void Node<VALUE_TYPE>::link(std::string name, Node::node_ptr newNode)
+	{
+		if (_children[name] != nullptr)
+		{
+			throw std::runtime_error("morpheus: failed to link node " + name + " to " + _name + ".\nIt's already linked!");
+		}
+		_children[name] = newNode;
 	}
 
 	template <typename T>
 	node_templatePtr<T> Node<T>::find(std::string name) const noexcept
 	{
-		auto it = std::find_if(_childs.cbegin(), _childs.cend(), [node_name = name](const auto& pair)
+		auto it = std::find_if(_children.cbegin(), _children.cend(), [node_name = name](const auto& pair)
 		{
 			return pair.first == node_name;
 		});
-		if (it != _childs.cend()) return (*it).second;
-		for (const auto& elem : _childs)
+		if (it != _children.cend()) return (*it).second;
+		for (const auto& elem : _children)
 		{
 			if (elem.second != nullptr)
 			{
@@ -138,12 +152,12 @@ namespace morph
 	template <typename T>
 	node_templatePtr<T> Node<T>::findParentOf(std::string name) const noexcept
 	{
-		auto it = std::find_if(_childs.cbegin(), _childs.cend(), [node_name = name](const auto& pair)
+		auto it = std::find_if(_children.cbegin(), _children.cend(), [node_name = name](const auto& pair)
 		{
 			return pair.first == node_name;
 		});
-		if (it != _childs.cend()) return this;
-		for (const auto& elem : _childs)
+		if (it != _children.cend()) return this;
+		for (const auto& elem : _children)
 		{
 			if (elem.second != nullptr)
 			{
@@ -159,15 +173,15 @@ namespace morph
 	std::vector<node_templatePtr<T>> Node<T>::findAllParentsOf(std::string name) noexcept
 	{
 		std::vector<node_ptr> parents;
-		auto it = std::find_if(_childs.cbegin(), _childs.cend(), [node_name = name](const auto& pair)
+		auto it = std::find_if(_children.cbegin(), _children.cend(), [node_name = name](const auto& pair)
 		{
 			return pair.first == node_name;
 		});
-		if (it != _childs.cend())
+		if (it != _children.cend())
 		{
 			parents.push_back(this->shared_from_this());
 		}
-		for (const auto& elem : _childs)
+		for (const auto& elem : _children)
 		{
 			if (elem.second != nullptr)
 			{
@@ -185,16 +199,16 @@ namespace morph
 	template <typename T>
 	node_templatePtr<T> Node<T>::get(std::string name) const noexcept
 	{
-		auto it = std::find_if(_childs.cbegin(), _childs.cend(), [node_name = std::move(name)](const auto& pair)
+		auto it = std::find_if(_children.cbegin(), _children.cend(), [node_name = std::move(name)](const auto& pair)
 		{
 			return pair.first == node_name;
 		});
-		if (it == _childs.cend()) return nullptr;
+		if (it == _children.cend()) return nullptr;
 		return (*it).second;
 	}
 
 	template <typename VALUE_TYPE>
-	node_templatePtr<VALUE_TYPE> Node<VALUE_TYPE>::getRoot() const
+	node_templateWeakPtr<VALUE_TYPE> Node<VALUE_TYPE>::getRoot() const
 	{
 		return _root;
 	}
@@ -215,6 +229,36 @@ namespace morph
 	void Node<VALUE_TYPE>::setName(const std::string &name)
 	{
 		_name = name;
+	}
+
+	static void printSpaceTimes(std::ostream& os, int n)
+	{
+		n *= 2;
+		for (int i = 0 ; i < n ; i++)
+		{
+			if (i % 2 == 1) os << '|';
+			else os << ' ';
+		}
+	}
+	template <typename VALUE_TYPE>
+	void Node<VALUE_TYPE>::print(std::ostream& os) const
+	{
+		os << _name << "\n";
+		if (isEmpty()) return;
+		for (const auto& child : _children)
+		{
+			printSpaceTimes(os, _level);
+			os << "->";
+			if (child.second != nullptr && child.second->getLevel() > _level)
+			{
+				child.second->print(os);
+			}
+			else if (child.second != nullptr)
+			{
+				os << child.second->getName() << "\n";
+			}
+
+		}
 	}
 }
 
