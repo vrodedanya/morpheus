@@ -49,7 +49,8 @@ Example of user data type:<br>
     };
     ```
     If type mandatory and parser couldn't find it in body of node, it will throw exception
-- Method `parseFromData` returns root node. For iterate over tree use `get`. Another methods you can check in Node.hpp
+- Method `parseFromData` returns tree. For iterate over tree use switchNode. Another methods you can check in Tree.hpp and
+Node.hpp
 while documentation isn't written :)
 
 ### Example of usage
@@ -85,23 +86,19 @@ message3 = "break"
 ```
 int main()
 {
-	auto t = morph::Loader<Scenario>::parseFromFile("scenario1.cfg");
+	auto t = morph::Loader<Scenario>::parseFromFile("file.scen");
+	t.root()->print(std::cerr);
+
 	std::string answer;
 	while (true)
 	{
-		std::cout << "Message 1: " << t->value.message1 << "\n";
-		std::cout << "Message 2: " << t->value.message2;
-		if (!t->value.message3.empty())
-		{
-			std::cout << "\nMessage 3: " << t->value.message3;
-		}
+		std::cout << "Message 1: " << t.node()->value.message1 << "\n";
+		std::cout << "Message 2: " << t.node()->value.message2;
 		std::cout << std::endl;
-		if (!t->count()) break;
-		std::cout << "Available answers: "<< t->getAvailableNodes() << std::endl;
+		if (t.node()->isEmpty()) break;
+		std::cout << "Available answers: "<< t.node()->getAvailableNodes() << std::endl;
 		std::getline(std::cin, answer);
-		auto buf = t->get(answer);
-		if (buf == nullptr) std::cout << "Wrong answer! I can't continue dialogue" << std::endl;
-		else t = buf;
+		if (!t.switchNode(answer)) std::cout << "Wrong answer! I can't continue dialogue" << std::endl;
 	}
     return 0;
 }
