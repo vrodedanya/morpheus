@@ -189,7 +189,11 @@ namespace morph
 				auto bufVector = elem.second->findAllParentsOf(name);
 				for (const auto& subElem : bufVector)
 				{
-					parents.push_back(subElem);
+
+					if (std::find_if(parents.cbegin(), parents.cend(),[subElem](auto node){
+						return subElem->getName() == node->getName();
+					}) == parents.cend())
+						parents.push_back(subElem);
 				}
 			}
 		}
